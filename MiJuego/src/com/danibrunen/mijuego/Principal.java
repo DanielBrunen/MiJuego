@@ -2,6 +2,7 @@ package com.danibrunen.mijuego;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Texture;
 
 public class Principal extends Game {
 
@@ -9,6 +10,19 @@ public class Principal extends Game {
 	
 	@Override
 	public void create() {
+		MANAGER.load("leon.png", Texture.class);
+		MANAGER.load("avispa.png", Texture.class);
+		MANAGER.load("ultra.png", Texture.class);
+		while(!MANAGER.update()) {
+			//TODO
+		}
+		
 		setScreen(new GameplayScreen(this));
+	}
+
+	@Override
+	public void dispose() {
+		super.dispose();
+		MANAGER.dispose();
 	}
 }
