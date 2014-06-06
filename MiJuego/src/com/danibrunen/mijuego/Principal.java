@@ -13,6 +13,10 @@ public class Principal extends Game {
 		MANAGER.load("leon.png", Texture.class);
 		MANAGER.load("avispa.png", Texture.class);
 		MANAGER.load("ultra.png", Texture.class);
+		MANAGER.load("pad.png", Texture.class);
+		MANAGER.load("balon.png", Texture.class);
+		MANAGER.load("campo.png", Texture.class);
+		MANAGER.load("vida.png", Texture.class);
 		while(!MANAGER.update()) {
 			//TODO
 		}

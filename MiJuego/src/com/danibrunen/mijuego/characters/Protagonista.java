@@ -7,9 +7,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.danibrunen.mijuego.Principal;
 
-public class Protagonista extends Actor {
+public class Protagonista extends Actor implements VidaProtagonista {
 
 	private TextureRegion leon;
+	private float vida;
 	
 	public Vector2 velocidad = new Vector2(0, 0);
 	
@@ -42,5 +43,20 @@ public class Protagonista extends Actor {
 	@Override
 	public void draw(SpriteBatch batch, float parentAlpha) {
 		batch.draw(leon, getX(), getY(), getOriginX(), getOriginY(), getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
+	}
+
+	@Override
+	public float getVida() {
+		return vida;
+	}
+
+	@Override
+	public void setVida(float vida) {
+		this.vida = vida;
+	}
+
+	@Override
+	public void regenerar(float nuevaVida) {
+		vida += nuevaVida;
 	}
 }

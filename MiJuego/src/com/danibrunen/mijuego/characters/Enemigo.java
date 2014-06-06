@@ -16,6 +16,13 @@ public class Enemigo extends Actor {
 	}
 	
 	@Override
+	public void act(float delta) {
+		translate(-300 * delta, 0);
+		if(getRight() < 0)
+			remove();
+	}
+	
+	@Override
 	public void draw(SpriteBatch batch, float parentAlpha) {
 		batch.draw(ultra, getX(), getY(), getOriginX(), getOriginY(), getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
 	}
