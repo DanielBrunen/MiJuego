@@ -2,6 +2,7 @@ package com.danibrunen.mijuego;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 
 public class Principal extends Game {
@@ -17,6 +18,10 @@ public class Principal extends Game {
 		MANAGER.load("balon.png", Texture.class);
 		MANAGER.load("campo.png", Texture.class);
 		MANAGER.load("vida.png", Texture.class);
+		MANAGER.load("fondo.ogg", Sound.class);
+		MANAGER.load("grito.ogg", Sound.class);
+		MANAGER.load("avispa.ogg", Sound.class);
+		
 		while(!MANAGER.update()) {
 			//TODO
 		}

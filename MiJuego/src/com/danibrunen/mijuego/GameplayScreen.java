@@ -1,56 +1,84 @@
 package com.danibrunen.mijuego;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL11;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.danibrunen.mijuego.characters.Bala;
-import com.danibrunen.mijuego.characters.BarraVidaProtagonista;
-import com.danibrunen.mijuego.characters.Enemigo;
-import com.danibrunen.mijuego.characters.Porteria;
-import com.danibrunen.mijuego.characters.Pad;
-import com.danibrunen.mijuego.characters.Protagonista;
+import com.danibrunen.mijuego.actores.Bala;
+import com.danibrunen.mijuego.actores.BarraVidaProtagonista;
+import com.danibrunen.mijuego.actores.Enemigo;
+import com.danibrunen.mijuego.actores.Pad;
+import com.danibrunen.mijuego.actores.Porteria;
+import com.danibrunen.mijuego.actores.Protagonista;
 
 public class GameplayScreen extends AbstractScreen {
 	
 	private Stage stage;
-	private Protagonista leon;
+	private Protagonista protagonista;
 	private Porteria porteria;
 	private Pad padArriba, padAbajo, padDisparo;
 	private float segundosSpawn;
-	private BarraVidaProtagonista vidaLeon, vidaPorteria;
+	private BarraVidaProtagonista vidaProtagonista, vidaPorteria;
+	private List<Enemigo> enemigos;
+	private List<Bala> balas;
 
 	public GameplayScreen(Principal game) {
 		super(game);
 	}
 	@Override
 	public void show() {
+		enemigos = new ArrayList<Enemigo>();
+		balas = new ArrayList<Bala>();
+		
 		stage = new Stage();
 		Gdx.input.setInputProcessor(stage);
 		
-		leon = new Protagonista();
-		leon.setPosition(0, 250);
-		stage.addActor(leon);
+		
+		Thread hiloMusica = new Thread(){
+			public void run() {
+				while(true) {
+					Principal.MANAGER.get("fondo.ogg", Sound.class).play();
+					try {
+						Thread.sleep(30000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				
+			}
+		};
+		hiloMusica.start();
+		
+		protagonista = new Protagonista();
+		protagonista.setPosition(0, 250);
+		protagonista.box.x = protagonista.getX();
+		protagonista.box.y = protagonista.getY();
+		stage.addActor(protagonista);
 		
 		porteria = new Porteria();
 		porteria.setBounds(-5, 0, 5, stage.getHeight());
 		stage.addActor(porteria);
 		
-		vidaLeon = new BarraVidaProtagonista(leon);
+		vidaProtagonista = new BarraVidaProtagonista(protagonista);
 		vidaPorteria = new BarraVidaProtagonista(porteria);
-		vidaLeon.setPosition(stage.getWidth() - 150, 20);
+		vidaProtagonista.setPosition(stage.getWidth() - 150, 20);
 		vidaPorteria.setPosition(stage.getWidth() - 150, 28);
-		stage.addActor(vidaLeon);
+		stage.addActor(vidaProtagonista);
 		stage.addActor(vidaPorteria);
 		
-		leon.setVida(0.4f);
+		protagonista.setVida(1);
+		porteria.setVida(1);
 		
 		if(Gdx.app.getType() == ApplicationType.Desktop) {
-			stage.setKeyboardFocus(leon);
-			leon.addListener(new ControlesPC());
+			stage.setKeyboardFocus(protagonista);
+			protagonista.addListener(new ControlesPC());
 		}
 		else if(Gdx.app.getType() == ApplicationType.Android) {
 			padArriba = new Pad(0, 0);
@@ -77,17 +105,68 @@ public class GameplayScreen extends AbstractScreen {
 	@Override
 	public void render(float delta) {
 		Gdx.gl.glClear(GL11.GL_COLOR_BUFFER_BIT);
+		
 		stage.act();
+		
 		segundosSpawn -= delta;
-		if(segundosSpawn < 0) { //spawn nuevo enemigo
-			Enemigo ultra = new Enemigo();
-			ultra.setPosition(stage.getWidth(), (float) (stage.getHeight() * Math.random()));
-			stage.addActor(ultra);
-			
-			segundosSpawn = 1 + (float) Math.random();
-		}
+		if(segundosSpawn < 0) //spawn nuevo enemigo
+			dispararEnemigo();
+		
+		comprobarListas();
+		comprobarColisiones();
 		
 		stage.draw();
+	}
+	
+	private void comprobarListas() {
+		for(int i = 0; i < enemigos.size(); i++) {
+			if(enemigos.get(i).getRight() < 0) {
+				enemigos.get(i).remove();
+				enemigos.remove(i);
+				porteria.regenerar(-0.5f);
+			}
+		}
+		for(int i = 0; i < balas.size(); i++) {
+			if(balas.get(i).getX() > stage.getWidth()) {
+				balas.get(i).remove();
+				balas.remove(i);
+			}
+		}
+	}
+	
+	private void comprobarColisiones() {
+		Enemigo enemigo;
+		for(int i = 0; i < enemigos.size(); i++) {
+			enemigo = enemigos.get(i);
+			if(enemigo.box.overlaps(protagonista.box)) {
+				//colision protagonista-enemigo
+				enemigos.get(i).remove();
+				enemigos.remove(i);
+				protagonista.regenerar(-0.5f);
+				Principal.MANAGER.get("grito.ogg", Sound.class).play();
+			} else {
+				for (int j = 0; j < balas.size(); j++) {
+					if(balas.get(j).box.overlaps(enemigo.box)) {
+						//colision bala-enemigo
+						enemigos.get(i).remove();
+						enemigos.remove(i);
+						balas.get(j).remove();
+						balas.remove(j);
+						Principal.MANAGER.get("grito.ogg", Sound.class).play();
+					}
+				}
+			}
+		}
+	}
+	
+	private void dispararEnemigo() {
+		Enemigo enemigo = new Enemigo();
+		enemigo.setPosition(stage.getWidth(), 0.1f * stage.getHeight() + 0.8f * stage.getHeight() * (float) Math.random());
+		enemigo.box.x = enemigo.getX();
+		enemigo.box.y = enemigo.getY();
+		stage.addActor(enemigo);
+		enemigos.add(enemigo);
+		segundosSpawn = 1 + (float) Math.random();
 	}
 
 	@Override
@@ -112,10 +191,10 @@ public class GameplayScreen extends AbstractScreen {
 		public boolean keyDown(InputEvent event, int keycode) {
 			switch (keycode) {
 			case Input.Keys.UP:
-				leon.velocidad.y = 300;
+				protagonista.velocidad.y = 300;
 				return true;
 			case Input.Keys.DOWN:
-				leon.velocidad.y = -300;
+				protagonista.velocidad.y = -300;
 				return true;
 			default:
 				return false;
@@ -126,10 +205,10 @@ public class GameplayScreen extends AbstractScreen {
 		public boolean keyUp(InputEvent event, int keycode) {
 			switch (keycode) {
 			case Input.Keys.UP:
-				leon.velocidad.y = 0;
+				protagonista.velocidad.y = 0;
 				return true;
 			case Input.Keys.DOWN:
-				leon.velocidad.y = 0;
+				protagonista.velocidad.y = 0;
 				return true;
 			default:
 				return false;
@@ -141,9 +220,13 @@ public class GameplayScreen extends AbstractScreen {
 			if(character != ' ') 
 				return false;
 			
-			Bala avispa = new Bala();
-			avispa.setPosition(leon.getWidth(), leon.getY() + leon.getHeight() / 2);
-			stage.addActor(avispa);
+			Bala bala = new Bala();
+			bala.setPosition(protagonista.getWidth(), protagonista.getY() + protagonista.getHeight() / 2);
+			bala.box.x = bala.getX();
+			bala.box.y = bala.getY();
+			stage.addActor(bala);
+			balas.add(bala);
+			Principal.MANAGER.get("avispa.ogg", Sound.class).play();
 			
 			return true;
 		}
@@ -153,9 +236,14 @@ public class GameplayScreen extends AbstractScreen {
 		@Override
 		public boolean touchDown(InputEvent event, float x, float y,
 				int pointer, int button) {
-			Bala avispa = new Bala();
-			avispa.setPosition(leon.getWidth(), leon.getY() + leon.getHeight() / 2);
-			stage.addActor(avispa);
+			Bala bala = new Bala();
+			bala.setPosition(protagonista.getWidth(), protagonista.getY() + protagonista.getHeight() / 2);
+			bala.box.x = bala.getX();
+			bala.box.y = bala.getY();
+			stage.addActor(bala);
+			balas.add(bala);
+			Principal.MANAGER.get("avispa.ogg", Sound.class).play();
+			
 			return true;
 		}
 	}
@@ -164,14 +252,14 @@ public class GameplayScreen extends AbstractScreen {
 		@Override
 		public boolean touchDown(InputEvent event, float x, float y,
 				int pointer, int button) {
-			leon.velocidad.y = -300;
+			protagonista.velocidad.y = -300;
 			return true;
 		}
 
 		@Override
 		public void touchUp(InputEvent event, float x, float y,
 				int pointer, int button) {
-			leon.velocidad.y = 0;
+			protagonista.velocidad.y = 0;
 		}
 	}
 
@@ -179,14 +267,14 @@ public class GameplayScreen extends AbstractScreen {
 		@Override
 		public boolean touchDown(InputEvent event, float x, float y,
 				int pointer, int button) {
-			leon.velocidad.y = 300;
+			protagonista.velocidad.y = 300;
 			return true;
 		}
 
 		@Override
 		public void touchUp(InputEvent event, float x, float y,
 				int pointer, int button) {
-			leon.velocidad.y = 0;
+			protagonista.velocidad.y = 0;
 		}
 	}
 
