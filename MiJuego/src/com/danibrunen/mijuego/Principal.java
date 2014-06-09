@@ -12,12 +12,13 @@ public class Principal extends Game {
 	
 	public SpriteBatch BATCH;
 	
-	public final AbstractScreen MENU, FIN, NIVEL1;
+	public final AbstractScreen MENU, FIN, NIVEL1, NIVEL2;
 	
 	public Principal() {
 		MENU = new PantallaMenu(this);
 		FIN = new PantallaDerrota(this);
 		NIVEL1 = new Nivel1(this);
+		NIVEL2 = new Nivel2(this);
 	}
 	
 	@Override
@@ -30,15 +31,19 @@ public class Principal extends Game {
 		MANAGER.load("ultra.png", Texture.class);
 		MANAGER.load("pad.png", Texture.class);
 		MANAGER.load("balon.png", Texture.class);
-		MANAGER.load("campo.png", Texture.class);
+		MANAGER.load("fondo.png", Texture.class);
 		MANAGER.load("vida.png", Texture.class);
 		MANAGER.load("menu.png", Texture.class);
 		MANAGER.load("gameover.png", Texture.class);
 		MANAGER.load("iniciar.png", Texture.class);
 		MANAGER.load("salir.png", Texture.class);
+		MANAGER.load("fondo2.png", Texture.class);
 		MANAGER.load("fondo.ogg", Sound.class);
 		MANAGER.load("grito.ogg", Sound.class);
+		MANAGER.load("menu.ogg", Sound.class);
 		MANAGER.load("avispa.ogg", Sound.class);
+		MANAGER.load("fondo2.ogg", Sound.class);
+		MANAGER.load("booster.mp3", Sound.class);
 		
 		while(!MANAGER.update()) {
 			

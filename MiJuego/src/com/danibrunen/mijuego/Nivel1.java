@@ -37,6 +37,7 @@ public class Nivel1 extends AbstractScreen {
 	public Nivel1(Principal game) {
 		super(game);
 	}
+	
 	@Override
 	public void show() {
 		enemigos = new ArrayList<Enemigo>();
@@ -47,7 +48,7 @@ public class Nivel1 extends AbstractScreen {
 		stage = new Stage(width, height, true, juego.BATCH);
 		Gdx.input.setInputProcessor(stage);
 		
-		Image imagenFondo = new Image(Principal.MANAGER.get("campo.png", Texture.class));
+		Image imagenFondo = new Image(Principal.MANAGER.get("fondo.png", Texture.class));
 		imagenFondo.setFillParent(true);
 		stage.addActor(imagenFondo);
 		
@@ -158,6 +159,8 @@ public class Nivel1 extends AbstractScreen {
 						balas.remove(j);
 						Principal.MANAGER.get("grito.ogg", Sound.class).play();
 						puntuacion.puntuacion++;
+						if(puntuacion.puntuacion >= 30)
+							juego.setScreen(juego.NIVEL2);
 					}
 				}
 			}
@@ -165,7 +168,7 @@ public class Nivel1 extends AbstractScreen {
 	}
 	
 	private void dispararEnemigo() {
-		Enemigo enemigo = new Enemigo();
+		Enemigo enemigo = new Enemigo(-350);
 		enemigo.setPosition(stage.getWidth(), 0.1f * stage.getHeight() + 0.8f * stage.getHeight() * (float) Math.random());
 		enemigo.box.x = enemigo.getX();
 		enemigo.box.y = enemigo.getY();
@@ -183,7 +186,6 @@ public class Nivel1 extends AbstractScreen {
 	@Override
 	public void dispose() {
 		stage.dispose();
-		musica.dispose();
 	}
 	
 	@Override
@@ -203,6 +205,15 @@ public class Nivel1 extends AbstractScreen {
 			case Input.Keys.DOWN:
 				protagonista.velocidad.y = -300;
 				return true;
+			case Input.Keys.SPACE:
+				Bala bala = new Bala();
+				bala.setPosition(protagonista.getWidth(), protagonista.getY() + protagonista.getHeight() / 2);
+				bala.box.x = bala.getX();
+				bala.box.y = bala.getY();
+				stage.addActor(bala);
+				balas.add(bala);
+				Principal.MANAGER.get("avispa.ogg", Sound.class).play();
+				return true;
 			default:
 				return false;
 			}
@@ -220,22 +231,6 @@ public class Nivel1 extends AbstractScreen {
 			default:
 				return false;
 			}
-		}
-
-		@Override
-		public boolean keyTyped(InputEvent event, char character) {
-			if(character != ' ') 
-				return false;
-			
-			Bala bala = new Bala();
-			bala.setPosition(protagonista.getWidth(), protagonista.getY() + protagonista.getHeight() / 2);
-			bala.box.x = bala.getX();
-			bala.box.y = bala.getY();
-			stage.addActor(bala);
-			balas.add(bala);
-			Principal.MANAGER.get("avispa.ogg", Sound.class).play();
-			
-			return true;
 		}
 	}
 
@@ -284,5 +279,4 @@ public class Nivel1 extends AbstractScreen {
 			protagonista.velocidad.y = 0;
 		}
 	}
-
 }

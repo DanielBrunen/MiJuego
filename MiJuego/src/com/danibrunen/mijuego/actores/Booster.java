@@ -7,22 +7,20 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.danibrunen.mijuego.Principal;
 
-public class Enemigo extends Actor {
+public class Booster extends Actor {
 
-	private TextureRegion ultra;
+	private TextureRegion balon;
 	public Rectangle box;
-	private int velocidad;
 	
-	public Enemigo(int velocidad) {
-		ultra = new TextureRegion(Principal.MANAGER.get("ultra.png", Texture.class), 32, 70);
-		setSize(ultra.getRegionWidth(), ultra.getRegionHeight());
+	public Booster() {
+		balon = new TextureRegion(Principal.MANAGER.get("balon.png", Texture.class), 32, 32);
+		setSize(balon.getRegionWidth(), balon.getRegionHeight());
 		box = new Rectangle(getX(), getY(), getWidth(), getHeight());
-		this.velocidad = velocidad;
 	}
 	
 	@Override
 	public void act(float delta) {
-		translate(velocidad * delta, 0);
+		translate(-450 * delta, 0);
 		box.x = getX();
 		box.y = getY();
 		box.width = getWidth();
@@ -31,6 +29,6 @@ public class Enemigo extends Actor {
 	
 	@Override
 	public void draw(SpriteBatch batch, float parentAlpha) {
-		batch.draw(ultra, getX(), getY(), getOriginX(), getOriginY(), getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
+		batch.draw(balon, getX(), getY(), getOriginX(), getOriginY(), getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
 	}
 }

@@ -1,6 +1,7 @@
 package com.danibrunen.mijuego;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -11,6 +12,7 @@ public class PantallaMenu extends AbstractScreen {
 	
 	private Texture fondo, btJugar, btSalir;
 	private Stage stage;
+	private Sound musica;
 
 	public PantallaMenu(Principal juego) {
 		super(juego);
@@ -29,6 +31,9 @@ public class PantallaMenu extends AbstractScreen {
 		Image imagenFondo = new Image(fondo);
 		imagenFondo.setFillParent(true);
 		stage.addActor(imagenFondo);
+		
+		musica = Gdx.audio.newSound(Gdx.files.internal("menu.ogg"));
+		musica.play();
 		
 		Image imagenJugar = new Image(btJugar);
 		imagenJugar.setBounds(50, 10, stage.getWidth() / 3, stage.getHeight() / 4);
@@ -65,7 +70,7 @@ public class PantallaMenu extends AbstractScreen {
 	
 	@Override
 	public void hide() {
-		
+		musica.dispose();
 	}
 
 	@Override
