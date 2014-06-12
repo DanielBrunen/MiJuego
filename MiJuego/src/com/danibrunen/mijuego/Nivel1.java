@@ -2,7 +2,6 @@ package com.danibrunen.mijuego;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
@@ -16,7 +15,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.danibrunen.mijuego.actores.Bala;
 import com.danibrunen.mijuego.actores.BarraVidaProtagonista;
 import com.danibrunen.mijuego.actores.Enemigo;
-import com.danibrunen.mijuego.actores.Pad;
 import com.danibrunen.mijuego.actores.Porteria;
 import com.danibrunen.mijuego.actores.Protagonista;
 import com.danibrunen.mijuego.actores.Puntuacion;
@@ -26,7 +24,6 @@ public class Nivel1 extends AbstractScreen {
 	private Stage stage;
 	private Protagonista protagonista;
 	private Porteria porteria;
-	private Pad padArriba, padAbajo, padDisparo;
 	private float segundosSpawn;
 	private BarraVidaProtagonista vidaProtagonista, vidaPorteria;
 	private List<Enemigo> enemigos;
@@ -75,29 +72,10 @@ public class Nivel1 extends AbstractScreen {
 		protagonista.setVida(1);
 		porteria.setVida(1);
 		
-		if(Gdx.app.getType() == ApplicationType.Desktop) {
-			stage.setKeyboardFocus(protagonista);
-			protagonista.addListener(new ControlesPC());
-		}
-		else if(Gdx.app.getType() == ApplicationType.Android) {
-			padArriba = new Pad(0, 0);
-			padAbajo = new Pad(1, 0);
-			padDisparo = new Pad(0, 1);
-			
-			padArriba.setPosition(10, 50);
-			padAbajo.setPosition(10, 10);
-			padDisparo.setPosition(stage.getWidth() - 50, 10);
-			
-			padArriba.addListener(new ControlesAndroidArriba());
-			padAbajo.addListener(new ControlesAndroidAbajo());
-			padDisparo.addListener(new ControlesAndroidDisparo());
-			
-			stage.addActor(padArriba);
-			stage.addActor(padAbajo);
-			stage.addActor(padDisparo);
-		}
+		stage.setKeyboardFocus(protagonista);
+		protagonista.addListener(new Controles());
 		
-		puntuacion = new Puntuacion(new BitmapFont());
+		puntuacion = new Puntuacion(new BitmapFont(), "Eliminados (de 30): ");
 		puntuacion.setPosition(vidaProtagonista.getX(), 15);
 		puntuacion.puntuacion = 0;
 		stage.addActor(puntuacion);
@@ -110,7 +88,7 @@ public class Nivel1 extends AbstractScreen {
 		stage.act();
 		
 		segundosSpawn -= delta;
-		if(segundosSpawn < 0) //spawn nuevo enemigo
+		if(segundosSpawn < 0)
 			dispararEnemigo();
 		
 		updateEnemigos(delta);
@@ -200,11 +178,9 @@ public class Nivel1 extends AbstractScreen {
 	@Override
 	public void resize(int width, int height) {
 		stage.setViewport(width, height, true);
-		if(Gdx.app.getType() == ApplicationType.Android && padDisparo != null)
-			padDisparo.setPosition(stage.getWidth() - 50, 10);
 	}
 	
-	private final class ControlesPC extends InputListener {
+	private final class Controles extends InputListener {
 		@Override
 		public boolean keyDown(InputEvent event, int keycode) {
 			switch (keycode) {
@@ -227,7 +203,6 @@ public class Nivel1 extends AbstractScreen {
 				return false;
 			}
 		}
-
 		@Override
 		public boolean keyUp(InputEvent event, int keycode) {
 			switch (keycode) {
@@ -240,52 +215,6 @@ public class Nivel1 extends AbstractScreen {
 			default:
 				return false;
 			}
-		}
-	}
-
-	private final class ControlesAndroidDisparo extends InputListener {
-		@Override
-		public boolean touchDown(InputEvent event, float x, float y,
-				int pointer, int button) {
-			Bala bala = new Bala();
-			bala.setPosition(protagonista.getWidth(), protagonista.getY() + protagonista.getHeight() / 2);
-			bala.box.x = bala.getX();
-			bala.box.y = bala.getY();
-			stage.addActor(bala);
-			balas.add(bala);
-			Principal.MANAGER.get("avispa.ogg", Sound.class).play();
-			
-			return true;
-		}
-	}
-
-	private final class ControlesAndroidAbajo extends InputListener {
-		@Override
-		public boolean touchDown(InputEvent event, float x, float y,
-				int pointer, int button) {
-			protagonista.velocidad.y = -300;
-			return true;
-		}
-
-		@Override
-		public void touchUp(InputEvent event, float x, float y,
-				int pointer, int button) {
-			protagonista.velocidad.y = 0;
-		}
-	}
-
-	private final class ControlesAndroidArriba extends InputListener {
-		@Override
-		public boolean touchDown(InputEvent event, float x, float y,
-				int pointer, int button) {
-			protagonista.velocidad.y = 300;
-			return true;
-		}
-
-		@Override
-		public void touchUp(InputEvent event, float x, float y,
-				int pointer, int button) {
-			protagonista.velocidad.y = 0;
 		}
 	}
 }

@@ -7,14 +7,16 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 public class Puntuacion extends Actor {
 
 	private BitmapFont font;
+	private String objetivo;
 	public int puntuacion;
 	
-	public Puntuacion(BitmapFont font) {
+	public Puntuacion(BitmapFont font, String objetivo) {
 		this.font = font;
+		this.objetivo = objetivo;
 	}
 	
 	@Override
 	public void draw(SpriteBatch batch, float parentAlpha) {
-		font.draw(batch, "Ultras eliminados: " + Integer.toString(puntuacion), getX(), getY());
+		font.draw(batch, objetivo + Integer.toString(puntuacion), getX(), getY());
 	}
 }
