@@ -113,10 +113,19 @@ public class Nivel1 extends AbstractScreen {
 		if(segundosSpawn < 0) //spawn nuevo enemigo
 			dispararEnemigo();
 		
+		updateEnemigos(delta);
+		protagonista.update();
+		
 		comprobarListas();
 		comprobarColisiones();
 		
 		stage.draw();
+	}
+	
+	private void updateEnemigos(float delta) {
+		for(Enemigo enemigo: enemigos) {
+			enemigo.update(delta);
+		}
 	}
 	
 	private void comprobarListas() {

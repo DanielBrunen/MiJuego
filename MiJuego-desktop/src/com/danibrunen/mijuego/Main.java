@@ -8,7 +8,7 @@ public class Main {
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
 		cfg.title = "SOS Real Zaragoza";
 		cfg.useGL20 = false;
-		cfg.width = 800;
+		cfg.width = 900;
 		cfg.height = 600;
 		
 		new LwjglApplication(new Principal(), cfg);

@@ -120,10 +120,19 @@ public class Nivel2 extends AbstractScreen {
 			dispararEnemigo(-320);
 		}
 		
+		updateEnemigos(delta);
+		protagonista.update();
+		
 		comprobarListas();
 		comprobarColisiones();
 		
 		stage.draw();
+	}
+	
+	private void updateEnemigos(float delta) {
+		for(Enemigo enemigo: enemigos) {
+			enemigo.update(delta);
+		}
 	}
 	
 	private void comprobarListas() {
@@ -175,7 +184,7 @@ public class Nivel2 extends AbstractScreen {
 						Principal.MANAGER.get("grito.ogg", Sound.class).play();
 						puntuacion.puntuacion++;
 						if(puntuacion.puntuacion >= 50)
-							juego.setScreen(juego.FIN);
+							juego.setScreen(juego.MENU);
 					}
 				}
 			}
@@ -187,7 +196,8 @@ public class Nivel2 extends AbstractScreen {
 				//colision balon-protagonista
 				balones.get(i).remove();
 				balones.remove(i);
-				protagonista.regenerar(0.1f);
+				porteria.regenerar(0.2f);
+				protagonista.regenerar(0.2f);
 				Principal.MANAGER.get("booster.mp3", Sound.class).play();
 			}
 		}

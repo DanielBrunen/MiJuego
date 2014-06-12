@@ -27,8 +27,10 @@ public class Principal extends Game {
 		BATCH = new SpriteBatch();
 		
 		MANAGER.load("leon.png", Texture.class);
+		MANAGER.load("leon2.png", Texture.class);
 		MANAGER.load("avispa.png", Texture.class);
 		MANAGER.load("ultra.png", Texture.class);
+		MANAGER.load("ultra2.png", Texture.class);
 		MANAGER.load("pad.png", Texture.class);
 		MANAGER.load("balon.png", Texture.class);
 		MANAGER.load("fondo.png", Texture.class);

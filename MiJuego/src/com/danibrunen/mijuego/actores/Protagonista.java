@@ -1,5 +1,7 @@
 package com.danibrunen.mijuego.actores;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -50,6 +52,14 @@ public class Protagonista extends Actor implements VidaProtagonista {
 	@Override
 	public void draw(SpriteBatch batch, float parentAlpha) {
 		batch.draw(leon, getX(), getY(), getOriginX(), getOriginY(), getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
+	}
+	
+	public void update() {
+		if(Gdx.input.isKeyPressed(Keys.SPACE)) {
+			leon = new TextureRegion(Principal.MANAGER.get("leon2.png", Texture.class), 39, 75);
+		} else {
+			leon = new TextureRegion(Principal.MANAGER.get("leon.png", Texture.class), 39, 75);
+		}
 	}
 
 	@Override
